@@ -40,6 +40,18 @@
       loop_control:
         loop_var: __openstack_network
 
+    - name: Lookup name of external subnet 
+      os_subnets_info:
+        cloud: "{{ openstack_cloud }}"
+        name: "{{ network_prefix }}*"
+      vars:
+        network_prefix: "{{ openstack_external_network_name }}"
+      register: r_subnets
+
+    - name: Store name of external subnet
+      set_fact:
+        f_external_subnet_name: "{{ r_subnets.openstack_subnets[0].name }}"
+
     - name: Manage OpenStack Routers
       os_router:
         cloud:                        "{{ __openstack_router.cloud_name }}"
@@ -47,7 +59,8 @@
         name:                         "{{ __openstack_router.name }}"
         network:                      "{{ __openstack_router.network }}"
         external_fixed_ips:
-          - { subnet: ext_subnet }
+          - subnet: "{{  f_external_subnet_name }}"
+
         interfaces:
           - "{{ __openstack_router.interfaces }}"
       loop: "{{ openstack_routers }}"

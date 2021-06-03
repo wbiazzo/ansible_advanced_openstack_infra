@@ -1,0 +1,23 @@
+---
+- name: Manage OpenStack Networks
+  hosts: control_node
+  gather_facts: true
+  become: false
+  collections:
+    - tok.openstack
+    
+  tasks:
+
+    - name: Fetch subnets and store in register
+      os_networks_info:
+        cloud: "{{ openstack_cloud }}"
+        filters:
+          name: "external"
+  #        tenant_id: 55e2ce24b2a245b09f181bf025724cbe
+      register: r_subnets
+
+    - name: Debug subnets
+      debug:
+        var: r_subnets
+
+...

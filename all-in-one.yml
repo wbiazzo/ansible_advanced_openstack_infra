@@ -1,0 +1,39 @@
+---
+- name: Manage OpenStack Networks
+  hosts: control_node
+  gather_facts: fale
+  become: false
+  collections:
+    - tok.openstack
+    
+  tasks:
+
+    - name: Fetch subnets and store in register
+      os_networks_info:
+        cloud: "{{ openstack_cloud }}"
+        filters:
+          name: "external"
+      register: r_external_network
+
+    - name: Debug subnets
+      debug:
+        var: r_external_network.openstack_networks[0].id
+
+    - name: Fetch subnets and store in register
+      os_subnets_info:
+        cloud: "{{ openstack_cloud }}"
+        filters:
+          network_id: "{{ r_external_network.openstack_networks[0].id }}"
+          name": "external-52-118-31-0"
+      register: r_subnet
+
+#    - name: Hacky way to extract pre-named external subnet
+ #     shell: "openstack subnet list | grep external | awk '{ print $4 }'"
+#      register: r_subnet_name
+
+    - name: Debug subnets
+      debug:
+        var: r_subnet
+        #var: r_subnet_name.stdout_lines[0]
+
+...

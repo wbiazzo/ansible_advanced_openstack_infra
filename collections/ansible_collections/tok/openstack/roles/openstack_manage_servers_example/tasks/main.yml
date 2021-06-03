@@ -34,21 +34,23 @@
 - name: Debug instances 
   debug:
     msg: "Server is {{ __instance.__openstack_server.instance_name }}"
-    verbosity: 2
+    #verbosity: 2
   loop: "{{ r_instances.results }}"
   loop_control:
     loop_var: __instance
 
-- when: openstack_server_state != 'absent' | default(true)
+#- when: openstack_server_state != 'absent' | default(true)
+
+- name: Setup floating IPs (FIPs)
   block:
 
     - name: Add floating IP to instances
       os_floating_ip:
-        cloud: openstack
+        cloud: "{{ openstack_cloud }}"
         state: "{{ openstack_server_state | default('present') }}"
         reuse: yes
         server: "{{ __instance.__openstack_server.instance_name }}"
-        network: ext_network
+        network: "{{ openstack_external_network_name }}"
         wait: true
         timeout: 180
       loop: "{{ r_instances.results }}"

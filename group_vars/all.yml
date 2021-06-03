@@ -1,4 +1,8 @@
-openstack_cloud: openstack
+# openstack_cloud: openstac
+
+openstack_cloud: "{{ (lookup('env', GUID) | default('openstack'))-project }}"
+openstack_cloud: "{{ lookup('env', 'GUID') }}-project" 
+
 provisioning_ssh_key: ansible_ssh_key
 
 openstack_images:

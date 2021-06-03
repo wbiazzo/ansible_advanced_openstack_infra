@@ -45,6 +45,7 @@ openstack_networks:
 
 openstack_routers:
   - name: router
+  #- name: tok-osp-08-internal-router #router
     # cloud_name: openstack
     cloud_name: "{{ openstack_cloud }}"
     state: present

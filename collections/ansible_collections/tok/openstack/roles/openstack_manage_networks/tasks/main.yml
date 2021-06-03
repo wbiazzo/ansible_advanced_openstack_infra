@@ -62,7 +62,12 @@
           - subnet: "{{  f_external_subnet_name }}"
 
         interfaces:
-          - "{{ __openstack_router.interfaces }}"
+          - "subnet-52-117-178-0-24"
+          - "external-52-118-31-0"
+          - "int_subnet"
+          - "tok-osp-08-internal-subnet"
+          #- "f131ac3f-fac5-4f56-ae56-7dd0afef4838
+          # - "{{ __openstack_router.interfaces }}"
       loop: "{{ openstack_routers }}"
       loop_control:
         loop_var: __openstack_router

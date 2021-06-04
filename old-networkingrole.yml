@@ -40,12 +40,37 @@
       loop_control:
         loop_var: __openstack_network
 
-    - name: Add subnet to router - os_router module not idempotent hence shell
-      shell: "openstack router add subnet {{ GUID }}-internal-router {{ __openstack_network.subnet_name }}"
-      loop: "{{ openstack_networks }}"
+    - name: Lookup name of external subnet 
+      os_subnets_info:
+        cloud: "{{ openstack_cloud }}"
+        name: "{{ network_prefix }}*"
+      vars:
+        network_prefix: "{{ openstack_external_network_name }}"
+      register: r_subnets
+
+    - name: Store name of external subnet
+      set_fact:
+        f_external_subnet_name: "{{ r_subnets.openstack_subnets[0].name }}"
+
+    - name: Manage OpenStack Routers
+      os_router:
+        cloud:                        "{{ __openstack_router.cloud_name }}"
+        state:                        "{{ __openstack_router.state }}"
+        name:                         "{{ __openstack_router.name }}"
+        network:                      "{{ __openstack_router.network }}"
+        external_fixed_ips:
+          - subnet: "{{  f_external_subnet_name }}"
+
+        interfaces:
+          - "subnet-52-117-178-0-24"
+          - "external-52-118-31-0"
+          - "int_subnet"
+          - "tok-osp-08-internal-subnet"
+          #- "f131ac3f-fac5-4f56-ae56-7dd0afef4838
+          # - "{{ __openstack_router.interfaces }}"
+      loop: "{{ openstack_routers }}"
       loop_control:
-        loop_var: __openstack_network
-      ignore_errors: true
+        loop_var: __openstack_router
 
   tags:
     - openstack-networks

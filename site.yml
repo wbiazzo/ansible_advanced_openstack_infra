@@ -6,17 +6,17 @@
 #  import_playbook: playbooks/manage-images.yml
 
 - name: Setup keypairs - ssh keys
-  import_playbook: playbooks/manage-keypairs.yml
+  import_playbook: manage-keypairs.yml
 
 - name: Setup networks and router
-  import_playbook: playbooks/manage-networks.yml
+  import_playbook: manage-networks.yml
   tags:
     - network
     - router
 
-#- import_playbook: playbooks/manage-security-groups.yml
+- import_playbook: manage-security-groups.yml
 #- import_playbook: playbooks/manage-servers.yml
 
-# - import_playbook: playbooks/manage-servers-example.yml
+- import_playbook: manage-servers-example.yml
 
 ...

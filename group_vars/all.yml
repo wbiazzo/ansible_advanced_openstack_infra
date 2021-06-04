@@ -1,4 +1,5 @@
 openstack_cloud: "{{ lookup('env', 'GUID') }}-project" 
+GUID: "{{ lookup('env', 'GUID') }}"
 
 provisioning_ssh_key: ansible_ssh_key
 

@@ -9,17 +9,29 @@
   tasks:
 
     - name: Fetch subnets and store in register
-      os_subnets_info:
+      openstack.cloud.routers_info:
         cloud: "{{ openstack_cloud }}"
         #name: "external*"
-        name: "{{ network_prefix }}*"
+        name: "{{ GUID }}-internal-router"
       register: r_subnets
       vars:
         network_prefix: external
 
     - name: Debug subnets
       debug:
-        var: r_subnets # .openstack_subnets[0].name
+        var: r_subnets.openstack_routers[0] # .openstack_subnets[0].name
+
+    - name: Print me if subnet found
+      when: '"4bb5f619-7366-4cc1-badb-1f96197fe082" in r_subnets.openstack_routers[0]' #.interfaces_info[0]'
+      debug:
+        msg: found subnet
+
+    - name: Extract subnet name
+      debug:
+        msg:
+          - "External subnet is {{ r_subnets | json_query(jmesquery) }}"
+      vars:
+        jmesquery: "openstack_routers[?subnet_id=='4bb5f619-7366-4cc1-badb-1f96197fe082'].ip_address"
 
     - name: Fetch subnets and store in register
       os_subnets_info:

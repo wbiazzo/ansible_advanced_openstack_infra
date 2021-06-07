@@ -11,27 +11,18 @@
     - name: Fetch subnets and store in register
       os_subnets_info:
         cloud: "{{ openstack_cloud }}"
-        #name: "external*"
-        name: "{{ network_prefix }}*"
-      register: r_subnets
+        name:  int_subnet # "{{ network_prefix }}*"
+      register: r_subnet_info
       vars:
         network_prefix: external
 
-    - name: Debug subnets
+    - name: Debug subnet
       debug:
-        var: r_subnets # .openstack_subnets[0].name
+        var: r_subnet_info # .openstack_subnets[0].name
 
-    - name: Fetch subnets and store in register
-      os_subnets_info:
-        cloud: "{{ openstack_cloud }}"
-        filters:
-          name: '"external*:'
-          # name: "external-52-118-31-0"
-      register: r_subnet_filter
-
-    - name: Debug subnets
+    - name: Debug subnet
       debug:
-        var: r_subnet_filter.openstack_subnets[0].name
+        var: r_subnet_info.openstack_subnets[0].name
 
     - name: Hacky way to extract pre-named external subnet
       shell: "openstack subnet list | grep external | awk '{ print $4 }'"

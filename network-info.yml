@@ -11,8 +11,8 @@
     - name: Fetch subnets and store in register
       os_networks_info:
         cloud: "{{ openstack_cloud }}"
-        filters:
-          name: "external"
+  #      filters:
+  #        name: "external"
   #        tenant_id: 55e2ce24b2a245b09f181bf025724cbe
       register: r_subnets
 

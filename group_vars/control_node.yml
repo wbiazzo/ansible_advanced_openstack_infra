@@ -72,6 +72,87 @@ openstack_routers:
 
 openstack_security_groups: []    
 
+openstack_cloud: openstack
+provisioning_ssh_key: ansible_ssh_key
+
+openstack_images:
+
+  - name: rhel-7.6
+    cloud: "{{ openstack_cloud }}"
+    fetch: true
+    state: present
+    container_format: bare
+    disk_format: qcow2
+    file_name: /tmp/rhel-7.6.qcow2
+    src_url: https://www.opentlc.com/download/ansible_bootcamp/rhel-server-7.6-update-5-x86_64-kvm.qcow2
+
+openstack_flavors:
+
+  - name: m2.tiny
+    cloud: "{{ openstack_cloud }}"
+    state: present
+    vcpus: 1
+    ram: 1024
+    disk: 10
+
+  - name: m2.small
+    cloud: "{{ openstack_cloud }}"
+    state: present
+    vcpus: 1
+    ram: 1024
+    disk: 20
+
+  - name: m2.medium
+    cloud: "{{ openstack_cloud }}"
+    state: present
+    vcpus: 2
+    ram: 2048
+    disk: 20
+
+openstack_keypair:
+
+  name: "{{ provisioning_ssh_key }}"
+  cloud: "{{ openstack_cloud }}"
+  state: present
+  public_key_file: "{{ ansible_env.HOME }}/.ssh/{{ provisioning_ssh_key }}.pub"
+
+openstack_networks:
+
+  - cloud_name: "{{ openstack_cloud }}"
+    network_name: ext_network
+    state: present
+    provider_network_type: flat
+    provider_physical_network: datacentre
+    subnet_name: ext_subnet
+    cidr_network: "192.0.2.0/24"
+    external: true
+    gateway_ip: 192.0.2.254
+    admin_state: yes
+    ip_version: 4
+    enable_dhcp: no
+    allocation_pool_start: 192.0.2.150
+    allocation_pool_end: 192.0.2.200
+
+  - cloud_name: openstack
+    network_name: int_network
+    subnet_name: int_subnet
+    cidr_network: "172.16.0.0/24"
+    state: present
+    external: false
+    admin_state: yes
+    ip_version: 4
+    enable_dhcp: yes
+
+
+openstack_routers:
+  - name: router
+    cloud_name: openstack
+    state: present
+    network: ext_network
+    interfaces: int_subnet
+
+openstack_security_groups: []    
+
 openstack_servers:
 
   - instance_name: app1
@@ -97,4 +178,3 @@ openstack_servers:
     deployment: dev
     security_group_name: frontend
     image: "{{ _server_image | default('rhel-7.6') }}"
-...

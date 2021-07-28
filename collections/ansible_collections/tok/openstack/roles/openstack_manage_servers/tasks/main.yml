@@ -1,0 +1,111 @@
+- name: Create app1
+  os_server:
+    cloud: openstack
+    name: app1
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.tiny
+    security_groups: apps
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=app_servers, deployment_name=QA"
+    userdata: |
+      #!/bin/bash curl -o /tmp/openstack.pub 
+      http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub 
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+
+- name: Add floating IP to app1
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: app1
+    network: ext_network
+    wait: true
+    timeout: 200
+
+- name: Create app2
+  os_server:
+    cloud: openstack
+    name: app2
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.tiny
+    security_groups: apps
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=app_servers, deployment_name=dev"
+    userdata: |
+      #!/bin/bash curl -o /tmp/openstack.pub 
+      http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub 
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+
+- name: Add floating IP to app2
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: app2
+    network: ext_network
+    wait: true
+    timeout: 200
+
+- name: Create db
+  os_server:
+    cloud: openstack
+    name: db
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.tiny
+    security_groups: db
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=database_servers, deployment_name=dev"
+    userdata: |
+      #!/bin/bash curl -o /tmp/openstack.pub 
+      http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub 
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+
+- name: Add floating IP to db
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: db
+    network: ext_network
+    wait: true
+    timeout: 200
+
+- name: Create frontend
+  os_server:
+    cloud: openstack
+    name: frontend
+    image: rhel-7.6
+    key_name: ansible_ssh_key
+    flavor: m2.tiny
+    security_groups: frontend
+    delete_fip: yes
+    wait: no
+    nics:
+      - net-name: int_network
+    meta: "group=load_balancers, deployment_name=dev"
+    userdata: |
+      #!/bin/bash curl -o /tmp/openstack.pub 
+      http://www.opentlc.com/download/ansible_bootcamp/openstack_keys/openstack.pub 
+      cat /tmp/openstack.pub >> /home/cloud-user/.ssh/authorized_keys
+
+- name: Add floating IP to frontend
+  os_floating_ip:
+    cloud: openstack
+    state: present
+    reuse: yes
+    server: frontend
+    network: ext_network
+    wait: true
+    timeout: 200
